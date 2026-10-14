@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>LankaRemit · Send money to Sri Lanka, see who keeps what</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Abhaya+Libre:wght@700;800&family=Figtree:wght@400;600&family=Noto+Sans+Sinhala:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--mist:#EAF1EC;--paper:#FCFDFB;--ink:#12302B;--soft:#4F6560;--teal:#2F6F66;--maroon:#8D2048;--gold:#E3A21A;--orange:#EB7A1E;--green:#0F6B4F;--line:#CBD9D2;
+--d:'Abhaya Libre','Noto Sans Sinhala',Georgia,serif;--b:'Figtree','Noto Sans Sinhala','Segoe UI',system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+body{background:var(--mist);color:var(--ink);font:400 17px/1.6 var(--b);border-top:7px solid;border-image:linear-gradient(90deg,var(--green) 0 22%,var(--orange) 22% 44%,var(--maroon) 44% 100%) 1}
+a{color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+.wrap{max-width:1320px;margin:0 auto;padding:0 clamp(20px,3vw,40px);position:relative}
+header{position:relative;z-index:2;display:flex;justify-content:space-between;align-items:center;gap:12px;padding:20px 0;flex-wrap:wrap}
+.logo{font:800 28px var(--d)}
+.logo small{display:block;font:600 14px var(--b);color:var(--soft)}
+.tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.dot{width:9px;height:9px;border-radius:50%;background:var(--gold)}
+.net{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--soft)}
+button{font:600 16px var(--b);cursor:pointer;border:0;border-radius:999px;padding:11px 20px;background:var(--ink);color:var(--paper)}
+button:disabled{opacity:.5;cursor:wait}
+button.gold{background:var(--gold);color:var(--ink)}
+button.lang{background:none;color:var(--ink);border:2px solid var(--ink);padding:8px 16px}
+.moon{position:absolute;right:calc(clamp(20px,3vw,40px) + 3vw);top:170px;width:clamp(260px,24vw,380px);pointer-events:none;z-index:0}
+.moon svg,.mclock svg{display:block;width:100%}
+.mclock{display:none;position:absolute;right:44px;top:20px;width:220px}
+.mclock.show{display:block}
+.run .b{animation:pulse 1.1s ease-in-out infinite;animation-delay:calc(var(--i)*.11s)}
+@keyframes pulse{0%,100%{opacity:.2}50%{opacity:1}}
+h1{font:800 clamp(34px,5vw,62px)/1.1 var(--d);margin:28px 0 16px;max-width:15ch;position:relative}
+:lang(si) h1{line-height:1.3;max-width:17ch}
+.amt{display:inline-flex;align-items:baseline;border-bottom:5px solid var(--gold);padding:0 3px}
+.amt input{font:inherit;color:var(--maroon);background:none;border:0;width:3.2ch;outline:0;padding:0}
+.lede{color:var(--soft);max-width:66ch;font-size:18px;margin-bottom:34px;position:relative}
+.lanes{display:grid;gap:14px;position:relative}
+.lane{display:grid;grid-template-columns:220px 1fr 180px;gap:20px;align-items:center;background:var(--paper);border-radius:18px;padding:20px 24px}
+.lane.arc{border:3px solid var(--gold)}
+.lane h3{font:700 21px var(--d)}
+.lane p{font-size:14px;color:var(--soft);line-height:1.45}
+.bar{display:flex;height:34px;border-radius:10px;overflow:hidden;background:var(--line)}
+.bar i{display:block;transition:width .7s cubic-bezier(.2,.8,.2,1)}
+.got{background:var(--teal)}.arc .got{background:var(--gold)}
+.kept{background:repeating-linear-gradient(135deg,var(--maroon) 0 5px,#a93a63 5px 10px)}
+.out{text-align:right;font:800 26px var(--d)}
+.out span{display:block;font:400 13px/1.35 var(--b);color:var(--maroon)}
+.legend{font-size:14px;color:var(--soft);margin:14px 2px 0;display:flex;gap:18px;flex-wrap:wrap}
+.legend b{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:-2px;margin-right:6px}
+.save{margin:0;font:700 clamp(20px,2.4vw,28px)/1.3 var(--d);max-width:32ch;color:var(--maroon)}
+.savebox{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center;margin-top:28px}
+.eqcard{background:var(--maroon);color:#fff;border-radius:20px;padding:24px 30px;display:flex;flex-direction:column;gap:4px}
+.eqcard b{font:800 clamp(40px,4vw,56px)/1 var(--d);color:var(--gold)}
+.eqcard #equiv{font-size:15px;color:#f3d9e2}.eqlead{font-size:14px;opacity:.85}
+.equiv{margin:8px 2px 0;font-size:15px;color:var(--soft);max-width:60ch}
+.verify{background:var(--paper);border-radius:20px;padding:28px 32px;margin-bottom:48px}
+.verify h2{font:800 clamp(24px,3vw,32px)/1.2 var(--d);margin-bottom:6px}
+.verify .vs{color:var(--soft);margin-bottom:16px;max-width:64ch}
+.vf{flex:1;min-width:240px;font:15px ui-monospace,Consolas,monospace;padding:13px 14px;border-radius:12px;border:2px solid var(--line);background:#fff;color:var(--ink)}
+#vres{margin-top:6px;min-height:1.3em;font-size:15px}
+#vres dl{display:grid;grid-template-columns:170px 1fr;gap:8px 16px;margin-top:16px}
+#vres dt{color:var(--soft)}#vres dd{word-break:break-all}
+#vres .ok{color:var(--green);font-weight:600}#vres .bad{color:var(--maroon);font-weight:600}
+.pill{display:inline-block;padding:2px 11px;border-radius:999px;font-size:13px;font-weight:600;background:#2d4b46;color:#fff;margin-top:12px}
+.pill:empty{display:none}.pill.ok{background:#0F6B4F}.pill.bad{background:#8D2048}.pill.pend,.pill.wait{background:#EB7A1E;color:#12302B}
+#hist .pill{margin-top:0}
+.rcpt{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-bottom:16px}
+.rcpt .f{max-width:260px;font-family:var(--b)}
+#rchips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{display:inline-flex;background:#0b2421;border:2px solid #2d4b46;border-radius:999px;overflow:hidden}
+.chip button{background:none;color:var(--paper);padding:6px 12px;border-radius:0;font-size:14px}
+.chip .del{padding:6px 10px;color:#ffa3bd}
+#hist{margin-top:26px}
+#hist:empty{display:none}
+#hist h3{font:700 20px var(--d);margin-bottom:8px}
+#hist div{display:flex;gap:16px;flex-wrap:wrap;font-size:14px;color:#BFD2CC;padding:8px 0;border-top:1px solid #2d4b46}
+#hist a{color:var(--gold);font-family:ui-monospace,Consolas,monospace}
+section.try{position:relative;overflow:hidden;margin:72px 0 48px;background:var(--ink);color:var(--paper);border-radius:26px;padding:36px}
+.try h2,.try p.s{max-width:60ch}
+.try h2{font:800 clamp(26px,3.4vw,36px)/1.2 var(--d);margin-bottom:8px}
+.try p.s{color:#BFD2CC;margin-bottom:24px;max-width:58ch}
+.form{display:grid;grid-template-columns:1fr 170px;gap:14px;margin-bottom:16px}
+label{display:block;font-size:15px;color:#BFD2CC;margin-bottom:6px}
+input.f{width:100%;font:16px ui-monospace,Consolas,monospace;padding:13px 14px;border-radius:12px;border:2px solid #2d4b46;background:#0b2421;color:var(--paper)}
+.row{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
+.row a{color:var(--gold);font-size:15px}
+#status{margin-top:14px;min-height:0;color:#BFD2CC}
+#status.err{color:#ffa3bd}
+.res{display:none;margin-top:22px;border-top:1px solid #2d4b46;padding-top:22px;grid-template-columns:repeat(3,1fr);gap:18px}
+.res.on{display:grid}
+.res div{font-size:14px;color:#BFD2CC}
+.res strong{display:block;font:800 clamp(30px,5vw,46px)/1.1 var(--d);color:var(--gold)}
+.res .wide{grid-column:1/-1;word-break:break-all}
+footer{font-size:14.5px;color:var(--soft);padding:10px 0 56px;display:grid;grid-template-columns:1.5fr 1fr;gap:12px 48px}
+@media(max-width:1100px){.lane{grid-template-columns:1fr auto;row-gap:14px}.lane .bar{grid-column:1/-1;grid-row:2}.lane .out{grid-column:2;grid-row:1}}
+@media(max-width:720px){.lane .bar,.lane .out{grid-column:auto;grid-row:auto}.savebox,footer{grid-template-columns:1fr}#vres dl{grid-template-columns:1fr}.verify{padding:22px}.wrap{padding:0 20px}section.try{padding:28px 22px}.lane{grid-template-columns:1fr;padding:18px 20px}.out{font-size:26px}.out{text-align:left}.form{grid-template-columns:1fr}.res{grid-template-columns:1fr 1fr}.moon{position:static;width:140px;margin:4px auto 0}.mclock{position:static;width:190px;margin-bottom:14px}.try h2,.try p.s{max-width:none}}
+@media(prefers-reduced-motion:reduce){.bar i{transition:none}.run .b{animation:none;opacity:.6}.rail b{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+  <div class="logo">LankaRemit<small data-i="tag"></small></div>
+  <div class="tools">
+    <button class="lang" id="lang" aria-label="Language"></button>
+    <span class="net"><span class="dot"></span>Arc Testnet</span>
+    <button id="connect"></button>
+  </div>
+</header>
+<div class="moon" id="moonHero" aria-hidden="true"></div>
+
+<h1><span data-i="h1a"></span> <span class="amt">$<input id="amount" type="text" inputmode="numeric" value="500" aria-label="USD"></span><span data-i="h1b"></span></h1>
+<p class="lede" data-i="lede"></p>
+
+<div class="lanes" id="lanes"></div>
+<div class="legend"><span><b style="background:var(--teal)"></b><i data-i="l1" style="font-style:normal"></i></span><span><b style="background:var(--maroon)"></b><i data-i="l2" style="font-style:normal"></i></span></div>
+
+<div class="savebox"><p class="save" id="save"></p><div class="eqcard"><span class="eqlead" data-i="eqlead"></span><b id="eqn"></b><span id="equiv"></span></div></div>
+
+<section class="try" id="try">
+  <div class="mclock" id="moonClock" aria-hidden="true"></div>
+  <h2 data-i="th"></h2>
+  <p class="s" data-i="ts"></p>
+  <div class="form">
+    <div><label for="to" data-i="lto"></label><input class="f" id="to" data-ph="pto"></div>
+    <div><label for="tamt" data-i="lamt"></label><input class="f" id="tamt" value="0.10" inputmode="decimal"></div>
+  </div>
+  <div class="rcpt">
+    <input class="f" id="rname" data-ph="rname" maxlength="30" aria-label="Recipient name">
+    <button type="button" id="rsave" class="lang" style="color:#fff;border-color:#fff" data-i="rsave"></button>
+    <div id="rchips"></div>
+  </div>
+  <div class="row">
+    <button class="gold" id="send"></button>
+    <label style="margin:0"><input type="checkbox" id="self" checked> <span data-i="self"></span></label>
+    <a href="https://faucet.circle.com" target="_blank" rel="noopener" data-i="faucet"></a>
+  </div>
+  <p id="bal" style="margin-top:14px;color:#BFD2CC"></p>
+  <p id="net" style="margin-top:6px;color:#BFD2CC;font-size:14px"></p>
+  <div><span id="pill" class="pill"></span></div>
+  <div id="status" role="status" aria-live="polite"></div>
+  <div class="res" id="res">
+    <div><strong id="rt">–</strong><span data-i="r1"></span></div>
+    <div><strong id="rf">–</strong><span data-i="r2"></span></div>
+    <div><strong id="rb">–</strong><span data-i="r3"></span></div>
+    <div class="wide"><span data-i="r4"></span> <a id="rh" target="_blank" rel="noopener" href="#">–</a></div>
+    <div class="wide row"><button class="gold" id="copy"></button><button class="lang" id="dl" style="color:#fff;border-color:#fff"></button></div>
+  </div>
+  <div id="hist"></div>
+</section>
+
+<section class="verify" id="verify">
+  <h2 data-i="vh"></h2>
+  <p class="vs" data-i="vs"></p>
+  <div class="row"><input class="vf" id="vhash" data-ph="vph" spellcheck="false"><button id="vgo" data-i="vbtn"></button></div>
+  <div id="vres" role="status" aria-live="polite"></div>
+</section>
+<footer><p data-i="foot"></p><p data-i="cap"></p></footer>
+</div>
+
+<script>
+// ===== CONFIG (edit these) =====
+const CFG = {
+  lkrPerUsd: 300,   // illustrative USD→LKR rate
+  arcFeeUsd: 0.01,  // replaced by your measured fee after a test send
+  cashOutPct: 0.5,
+  billLkr: 8000,    // illustrative monthly household electricity bill, edit to a real figure  // assumed cost to turn USDC into LKR
+  routes: [
+    {id:'bank', fixed:25, pct:2.5},
+    {id:'app',  fixed:5,  pct:1.2},
+    {id:'arc',  arc:true}
+  ]
+};
+const CHAIN = {id:5042002, rpc:'https://rpc.testnet.arc.network', explorer:'https://explorer.testnet.arc.io', usdc:'0x3600000000000000000000000000000000000000'};
+const HEX = '0x' + CHAIN.id.toString(16);
+
+// ===== Moonstone (sandakada pahana) =====
+function moon(clock){
+  const pt=(r,a)=>[100+r*Math.cos(a),100+r*Math.sin(a)], A=(i,n)=>Math.PI+(i+.5)/n*Math.PI, f=v=>v.toFixed(1);
+  const petals=(r,n,rx,ry,c)=>{let g='';for(let i=0;i<n;i++){const a=A(i,n),[x,y]=pt(r,a);g+=`<ellipse cx="${f(x)}" cy="${f(y)}" rx="${rx}" ry="${ry}" transform="rotate(${f(a*180/Math.PI-90)} ${f(x)} ${f(y)})" fill="${c}"/>`}return g};
+  let beads='';for(let i=0;i<32;i++){const [x,y]=pt(95,A(i,32));beads+=`<circle cx="${f(x)}" cy="${f(y)}" r="2" fill="#E3A21A"/>`}
+  const b=[beads, petals(80,17,4.4,9,'#8D2048'),
+    '<path d="M32 100a68 68 0 0 1 136 0" fill="none" stroke="#EB7A1E" stroke-width="7" stroke-dasharray="1 7" stroke-linecap="round"/>',
+    petals(54,12,4,8,'#2F6F66'),
+    '<path d="M60 100a40 40 0 0 1 80 0" fill="none" stroke="#E3A21A" stroke-width="3"/>',
+    '<path d="M78 100a22 22 0 0 1 44 0Z" fill="#8D2048"/>'+(clock?'':'<circle cx="100" cy="100" r="9" fill="#E3A21A"/>')];
+  return '<svg viewBox="0 0 200 104" fill="none">'+b.map((x,i)=>`<g class="b" style="--i:${i}">${x}</g>`).join('')+(clock?'<text id="mtime" x="100" y="97" text-anchor="middle" fill="#fff" font-size="12" font-weight="800" font-family="Abhaya Libre,serif">–</text>':'')+'</svg>';
+}
+const $m=id=>document.getElementById(id);
+$m('moonHero').innerHTML=moon(false); $m('moonClock').innerHTML=moon(true);
+
+// ===== Languages =====
+const TX = {
+si:{
+ tag:'ගෙදරට යවන සල්ලි', h1a:'', h1b:'ක් ගෙදරට යැව්වොත්, අතට ලැබෙන්නේ කීයද?',
+ lede:'බැංකු වයර්, මුදල් හුවමාරු ඇප් සහ Arc හි USDC යන ක්‍රම තුනෙන් යැවූ විට ශ්‍රී ලංකාවේ ඔබේ පවුලට ලැබෙන මුදල සසඳන්න. ඉන්පසු Arc මත සැබෑ පරීක්ෂණ ගෙවීමක් යවා, කොපමණ වේලාවක් ගත වේදැයි ඔබම බලන්න.',
+ r_bank:'බැංකු වයර් (SWIFT)', r_app:'මුදල් හුවමාරු ඇප්', r_arc:'Arc හි USDC',
+ t_bank:'දින 2 සිට 4 දක්වා', t_app:'විනාඩි කිහිපයක සිට දවසක් දක්වා', t_arc:'Arc මත තත්පරයකට අඩුයි. ලංකාවේ මුදල් කර ගැනීමට වෙනම කාලයක් යයි.',
+ kept:f=>`$${f} ක් ගාස්තු සහ අනුපාත ලාභයට යයි`, rs:'රු.',
+ l1:'ශ්‍රී ලංකාවට ලැබෙන මුදල', l2:'ගාස්තු සහ මුදල් අනුපාත ලාභයට යන මුදල',
+ th:'දැන් Arc මත යවා බලන්න. තත්පර ගණන් කරන්න.',
+ ts:'මෙය Arc Testnet මත පරීක්ෂණ USDC යවයි. එයට සැබෑ වටිනාකමක් නැත. ජාලය තහවුරු කිරීමට ගත වූ කාලයත් ගාස්තුවත් මෙම පිටුව මනිනු ඇත.',
+ lto:'ලබන්නාගේ ලිපිනය', pto:'0x… (නැතහොත් පහත ටික් කරන්න)', lamt:'පරීක්ෂණ මුදල (USDC)',
+ send:'පරීක්ෂණ USDC යවන්න', self:'මගේම වොලට් එකට යවන්න', faucet:'නොමිලේ පරීක්ෂණ USDC ගන්න',
+ connect:'වොලට් සම්බන්ධ කරන්න',
+ r1:'ඔබේ browser එකෙන් මැනූ තහවුරු වීමේ කාලය', r2:'ජාල ගාස්තුව', r3:'බ්ලොක් අංකය', r4:'ගනුදෙනුව:',
+ foot:'බැංකු සහ ඇප් වල ගාස්තු සහ අනුපාත ඇස්තමේන්තු පමණි. ඒවා කිසිදු සේවාවක සැබෑ මිල ගණන් නොවේ. ඒවා වෙනස් කිරීමට script එකේ ඉහළ CONFIG කොටස භාවිතා කරන්න. USDC ක්‍රමයේ ගණනට ලංකාවේ මුදල් බවට පත් කිරීමට 0.5% ක වියදමක් සහ ඔබේ පරීක්ෂණ ගනුදෙනුවෙන් මැනූ ගාස්තුව ඇතුළත් වේ. Arc Testnet USDC වලට මුදල් වටිනාකමක් නැත. මෙය මූල්‍ය උපදෙස් නොවේ.',
+ noWallet:'වොලට් එකක් හමු නොවීය. MetaMask ස්ථාපනය කර පිටුව නැවත පූරණය කරන්න.', noWalletFile:'ඩිස්ක් එකෙන් විවෘත කළ file එකක වොලට් වැඩ නොකරයි. පිටුව Vercel හෝ Netlify හි deploy කරන්න, නැතහොත් local server එකකින් විවෘත කරන්න.', pending:'MetaMask හි ඉල්ලීමක් දැනටමත් බලා සිටී. MetaMask extension එක විවෘත කර අනුමත හෝ ප්‍රතික්ෂේප කරන්න.',
+ connected:'Arc Testnet වෙත සම්බන්ධ විය.',
+ badAddr:'0x වලින් ආරම්භ වන වලංගු ලිපිනයක් ඇතුළත් කරන්න, නැතහොත් "මගේම වොලට් එකට යවන්න" ටික් කරන්න.',
+ badAmt:'0 ට වැඩි පරීක්ෂණ මුදලක් ඇතුළත් කරන්න. උදා: 0.10',
+ confirmW:'ඔබේ වොලට් එකේ ගනුදෙනුව තහවුරු කරන්න…', waiting:'යවා ඇත. Arc තහවුරු කරන තෙක් බලා සිටී…',
+ timeout:'තත්පර 90කට පසුවත් අවසන් වී නැත. එය ලැයිස්තුවේ "සැකසෙමින්" ලෙස ඉතුරු වෙයි, පිටුව නැවත පූරණය කළාම නැවත පරීක්ෂා කරයි.',
+ failed:'ගනුදෙනුව අසාර්ථක විය. මුදලට සහ ගාස්තුවට ප්‍රමාණවත් පරීක්ෂණ USDC තිබේදැයි බලන්න.',
+ done:'තහවුරු විය. ඉහත USDC තීරුව දැන් ඔබ මැනූ ගාස්තුව භාවිතා කරයි.',
+ rejected:'ඔබ වොලට් එකේදී ගනුදෙනුව ප්‍රතික්ෂේප කළා.',
+ save:(a,r)=>`සෑම මාසයකම $${a} යැව්වොත්, වසරක් තුළ බැංකු වයර් එකට වඩා රු. ${r} ක් වැඩියෙන් ඔබේ පවුලට ලැබේ (ඇස්තමේන්තුවක්).`,
+ dl:'පින්තූර කාඩ්පත බාගන්න', rh:'තරගය', rbtn:'තරගය ධාවනය කරන්න', rA:'Arc හි USDC', rB:'බැංකු වයර්',
+ rdone:t=>`Arc ${t} කින් අවසන් කළා. බැංකු වයර් එක තවමත් පාරේ, තව දින 2 සිට 4 දක්වා යයි.`,
+ eqlead:'ඒ පමණ', equiv:(m,p)=>`ගෘහ විදුලි බිල් මාස (මාසයකට රු. ${p} ක් ලෙස උපකල්පනය කර ඇත, CONFIG හි වෙනස් කරන්න)`,
+ pillWait:'ඔබේ වොලට් එකේ තහවුරු කිරීම බලා සිටී', pillPend:'සැකසෙමින්', me:'මගේ වොලට් එක',
+ net:ms=>`Arc RPC වෙත ඔබේ ජාලයේ ප්‍රතිචාර කාලය: ${ms} ms. ජාලය මන්දගාමී නම් මනින ලද තහවුරු කිරීමේ කාලය වැඩි වේ.`,
+ rname:'නම (උදා: අම්මා)', rsave:'ලබන්නා සුරකින්න', rdel:'ඉවත් කරන්න',
+ rbad:'සුරකින්න වලංගු ලිපිනයක් සහ නමක් ඇතුළත් කරන්න.', rsaved:'ලබන්නා සුරකින ලදී.',
+ badDec:'දශම ස්ථාන 6කට වැඩි නොවිය යුතුයි.', balLow:'මුදල ඔබේ Arc Testnet USDC ශේෂයට වඩා වැඩියි.',
+ wrongChain:'ඔබේ වොලට් එක Arc Testnet වෙත මාරු කර නැවත උත්සාහ කරන්න.',
+ histOff:'ඔබේ browser එක local storage අවහිර කරන නිසා, refresh කළාම මේ ලැයිස්තුව ඉතුරු වෙන්නේ නැහැ.',
+ bal:v=>`ඔබේ Arc Testnet USDC ශේෂය: ${v}`,
+ vh:'ගෙවීමක් තහවුරු කරන්න', vs:'Arc Testnet ගනුදෙනු හැඳුනුම් අංකයක් (hash) paste කළාම, කවුද යැව්වේ, කීයද, සාර්ථකද කියලා පෙන්වනවා.',
+ vph:'0x… ගනුදෙනු hash එක', vbtn:'තහවුරු කරන්න',
+ vSt:'තත්ත්වය', vFr:'යවන්නා', vTo:'ලබන්නා', vAm:'ප්‍රමාණය', vFe:'ජාල ගාස්තුව', vBk:'බ්ලොක් අංකය',
+ vOk:'සාර්ථකයි', vBad:'අසාර්ථකයි', vPend:'තවම තහවුරු වී නැත', vNone:'මේ hash එකට ගනුදෙනුවක් Arc Testnet එකේ හමු වුණේ නැහැ.',
+ vBadHash:'0x වලින් ආරම්භ වන අක්ෂර 64ක hash එකක් ඇතුළත් කරන්න.', vFail:'Arc වෙත සම්බන්ධ විය නොහැකි වුණා. වොලට් එක සම්බන්ධ කර නැවත උත්සාහ කරන්න.',
+ copy:'ප්‍රතිඵලය copy කරන්න', copied:'Copy කළා', hist:'ඔබේ පරීක්ෂණ යැවීම්',
+ share:(t,f,u)=>`මම Arc Testnet මත USDC ${t} කින් (මගේ browser එකෙන් මැනූ), ${f} ගාස්තුවකට යැව්වා. ${u} (LankaRemit මගින්)`, cap:'සඳකඩ පහන (sandakada pahana): ශ්‍රී ලංකාවේ පැරණි දේවාලවල දොරටුවේ ඇති සඳගල. කොළඹ සිටින සිසුවෙකු විසින් Arc community එක වෙනුවෙන් නිර්මාණය කරන ලදී.', other:'English'
+},
+en:{
+ tag:'Sending money home to Sri Lanka', h1a:'Of every', h1b:' you send to Sri Lanka, how much arrives?',
+ lede:'Many Sri Lankan families rely on money sent by relatives working abroad, and a big slice of it disappears in fees and exchange-rate margins. See what a bank wire, a transfer app and USDC on Arc leave for the family, then send a real test payment on Arc and time it yourself.',
+ r_bank:'Bank wire (SWIFT)', r_app:'Money transfer app', r_arc:'USDC on Arc',
+ t_bank:'2 to 4 days', t_app:'Minutes to 1 day', t_arc:'Under 1 second on Arc. Cashing out in Sri Lanka takes extra time.',
+ kept:f=>`$${f} kept in fees and margin`, rs:'Rs',
+ l1:'Arrives in Sri Lanka', l2:'Kept in fees and rate margin',
+ th:'Now send it on Arc. Watch the clock.',
+ ts:'This sends test USDC on Arc Testnet. It has no real value, and the page measures how long the network takes to confirm it and what the fee was.',
+ lto:'Recipient address', pto:'0x… (or tick the box below)', lamt:'Test amount (USDC)',
+ send:'Send test USDC', self:'Send to my own wallet', faucet:'Get free test USDC',
+ connect:'Connect wallet',
+ r1:'to confirm, as measured in your browser', r2:'network fee', r3:'block', r4:'Transaction:',
+ foot:'Fee and rate figures for banks and transfer apps are illustrative estimates, not quotes from any provider. Edit them in the CONFIG block at the top of the script. The USDC route assumes a 0.5% cost to cash out to LKR and uses the fee measured from your own test transaction once you send one. Arc Testnet USDC has no monetary value. Not financial advice.',
+ noWallet:'No wallet found. Install MetaMask, then reload this page.', noWalletFile:'Browsers do not let wallets work on a file opened from your disk. Deploy the page (Vercel or Netlify) or run it with a local server, then open that link.', pending:'A request is already waiting in MetaMask. Open the MetaMask extension and approve or reject it.', connected:'Connected to Arc Testnet.',
+ badAddr:'Enter a valid recipient address that starts with 0x, or tick "Send to my own wallet".',
+ badAmt:'Enter a test amount above 0, for example 0.10.',
+ confirmW:'Confirm the transaction in your wallet…', waiting:'Sent. Waiting for Arc to confirm…',
+ timeout:'Still pending after 90 seconds. It stays in your list as Pending, and the page re-checks it when you reload.',
+ failed:'The transaction failed on-chain. Check you have test USDC for the amount and the fee.',
+ done:'Confirmed. The USDC bar above now uses your measured fee.',
+ rejected:'You rejected the transaction in your wallet.',
+ save:(a,r)=>`Send $${a} every month and USDC on Arc leaves Rs ${r} more with your family over a year than a bank wire (estimate).`,
+ dl:'Download share card', rh:'The race', rbtn:'Run the race', rA:'USDC on Arc', rB:'Bank wire',
+ rdone:t=>`Arc finished in ${t}. The bank wire is still on its way, with 2 to 4 days to go.`,
+ eqlead:'That is roughly', equiv:(m,p)=>`months of a household electricity bill (assuming Rs ${p} a month, edit it in CONFIG)`,
+ pillWait:'Waiting for your wallet', pillPend:'Pending', me:'my wallet',
+ net:ms=>`Your connection to the Arc RPC: ${ms} ms. A slow connection adds to the measured confirmation time.`,
+ rname:'Name (e.g. Amma)', rsave:'Save recipient', rdel:'Remove',
+ rbad:'Enter a valid address and a name to save.', rsaved:'Recipient saved.',
+ badDec:'Use at most 6 decimal places.', balLow:'The amount is more than your Arc Testnet USDC balance.',
+ wrongChain:'Please switch your wallet to Arc Testnet and try again.',
+ histOff:'Your browser is blocking local storage, so this list will not be kept after a refresh.',
+ bal:v=>`Your Arc Testnet USDC balance: ${v}`,
+ vh:'Verify a payment', vs:'Paste a transaction hash from Arc Testnet to see who sent it, how much, and whether it went through.',
+ vph:'0x… transaction hash', vbtn:'Verify',
+ vSt:'Status', vFr:'From', vTo:'To', vAm:'Amount', vFe:'Network fee', vBk:'Block',
+ vOk:'Success', vBad:'Failed', vPend:'Not confirmed yet', vNone:'No transaction with that hash was found on Arc Testnet.',
+ vBadHash:'Enter a hash that starts with 0x and has 64 hex characters.', vFail:'Could not reach Arc. Connect your wallet and try again.',
+ copy:'Copy result', copied:'Copied', hist:'Your test sends',
+ share:(t,f,u)=>`I sent USDC on Arc Testnet in ${t} (measured in my browser) for a ${f} fee. ${u} (via LankaRemit)`, cap:'The half-circle motif is the sandakada pahana, the moonstone carved at the doorsteps of ancient Sri Lankan temples. Built by a student in Colombo for the Arc community.', other:'සිංහල'
+}};
+const $ = id => document.getElementById(id);
+let L = 'en', account = null, T = TX.en;
+try{ if(localStorage.getItem('lr_lang')==='si') L='si' }catch(e){}
+function fmt(n){return Math.round(n).toLocaleString('en-US')}
+function short(a){return a.slice(0,6)+'…'+a.slice(-4)}
+function applyLang(){
+  T = TX[L]; document.documentElement.lang = L;
+  document.querySelectorAll('[data-i]').forEach(e=>e.textContent=T[e.dataset.i]);
+  document.querySelectorAll('[data-ph]').forEach(e=>e.placeholder=T[e.dataset.ph]);
+  $('send').textContent=T.send; $('copy').textContent=T.copy; $('dl').textContent=T.dl; showHist(); showBal(); showRcpts(); showNet(); setPill(pillK); $('lang').textContent=T.other;
+  $('connect').textContent = account ? short(account) : T.connect;
+  render();
+}
+$('lang').onclick = ()=>{L = L==='si'?'en':'si'; try{localStorage.setItem('lr_lang',L)}catch(e){} $('vres').textContent=''; $('status').textContent=''; applyLang()};
+
+// ===== Comparison =====
+function render(){
+  const amt = Math.max(1, parseFloat($('amount').value.replace(/[^\d.]/g,'')) || 0);
+  $('lanes').innerHTML = CFG.routes.map(r=>{
+    const fee = Math.min(amt, r.arc ? CFG.arcFeeUsd + amt*CFG.cashOutPct/100 : r.fixed + amt*r.pct/100);
+    const got = Math.max(0, amt-fee), pct = got/amt*100, name = T['r_'+r.id];
+    return `<div class="lane ${r.arc?'arc':''}">
+      <div><h3>${name}</h3><p>${T['t_'+r.id]}</p></div>
+      <div class="bar" role="img" aria-label="${name}: ${pct.toFixed(1)}%"><i class="got" style="width:${pct}%"></i><i class="kept" style="width:${100-pct}%"></i></div>
+      <div class="out">${T.rs} ${fmt(got*CFG.lkrPerUsd)}<span>${T.kept(fee.toFixed(2))}</span></div></div>`;
+  }).join('');
+  const f = r => Math.min(amt, r.arc ? CFG.arcFeeUsd + amt*CFG.cashOutPct/100 : r.fixed + amt*r.pct/100);
+  const saved = (f(CFG.routes[0]) - f(CFG.routes[2]))*12*CFG.lkrPerUsd;
+  $('save').textContent = T.save(fmt(amt), fmt(saved));
+  $('eqn').textContent = '≈ ' + (saved/CFG.billLkr).toFixed(1);
+  $('equiv').textContent = T.equiv((saved/CFG.billLkr).toFixed(1), fmt(CFG.billLkr));
+}
+function sizeAmt(){ const el=$('amount'); el.style.width=(Math.max(2,el.value.length)+0.5)+'ch' }
+$('amount').addEventListener('input', ()=>{ sizeAmt(); render() });
+
+// ===== Wallet =====
+const found=[]; let eth=null, bound=false;
+addEventListener('eip6963:announceProvider',e=>found.push(e.detail));
+dispatchEvent(new Event('eip6963:requestProvider'));
+function pickProvider(){
+  const mm=found.find(p=>p.info.rdns==='io.metamask');
+  return (mm||found[0]||{}).provider || window.ethereum || null;
+}
+function setStatus(t, err){const s=$('status');s.textContent=t;s.className=err?'err':''}
+async function switchChain(){
+  try{ await eth.request({method:'wallet_switchEthereumChain',params:[{chainId:HEX}]}) }
+  catch(e){
+    if(e.code===4902 || /Unrecognized|not been added/i.test(e.message||'')){
+      await eth.request({method:'wallet_addEthereumChain',params:[{chainId:HEX,chainName:'Arc Testnet',nativeCurrency:{name:'USDC',symbol:'USDC',decimals:18},rpcUrls:[CHAIN.rpc],blockExplorerUrls:[CHAIN.explorer]}]});
+    } else throw e;
+  }
+}
+async function connect(){
+  eth=pickProvider();
+  if(!eth){setStatus(location.protocol==='file:'?T.noWalletFile:T.noWallet,true);return false}
+  try{
+    account = (await eth.request({method:'eth_requestAccounts'}))[0];
+    if(!bound&&eth.on){bound=true;eth.on('accountsChanged',a=>{account=a[0]||null;$('connect').textContent=account?short(account):T.connect;balv=null;showBal();loadBal()})}
+    await switchChain();
+    $('connect').textContent = short(account); setStatus(T.connected); loadBal(); return true;
+  }catch(e){setStatus(e.code===4001?T.rejected:e.code===-32002?T.pending:(e.message||'Error'),true);return false}
+}
+$('connect').onclick = connect;
+
+// ===== Helpers =====
+const tm = ms => ms<1000 ? Math.round(ms)+' ms' : (ms/1000).toFixed(2)+' s';
+const fmtFee = f => f>=0.01 ? '$'+f.toFixed(3) : f>=0.0001 ? '$'+f.toFixed(5) : f>0 ? '$'+f.toFixed(7) : '–';
+const sleep = ms => new Promise(r=>setTimeout(r,ms));
+const feeOf = rc => Number(BigInt(rc.effectiveGasPrice||'0x0')*BigInt(rc.gasUsed))/1e18;
+const esc = t => String(t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const pad = h => h.replace(/^0x/,'').toLowerCase().padStart(64,'0');
+async function rpcDirect(method, params){
+  const r = await fetch(CHAIN.rpc,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({jsonrpc:'2.0',id:1,method,params})});
+  const j = await r.json(); if(j.error) throw new Error(j.error.message); return j.result;
+}
+async function rpc(method, params){            // public RPC first, then the wallet (only if it is on Arc Testnet)
+  try{ return await rpcDirect(method,params) }
+  catch(e){
+    const pv = eth || pickProvider(); if(!pv) throw e;
+    const c = await pv.request({method:'eth_chainId'});
+    if(String(c).toLowerCase()!==HEX.toLowerCase()) throw e;
+    return pv.request({method,params});
+  }
+}
+
+// ===== Status pill =====
+let pillK = '';
+function setPill(k){
+  pillK = k||''; const p=$('pill'); p.className='pill'+(pillK?' '+pillK:'');
+  p.textContent = k==='wait'?T.pillWait : k==='pend'?T.pillPend : k==='ok'?T.vOk : k==='bad'?T.vBad : '';
+}
+
+// ===== Network latency =====
+let netv = null;
+function showNet(){ $('net').textContent = netv===null ? '' : T.net(netv) }
+async function ping(){
+  try{ let best=1e9; for(let i=0;i<2;i++){ const t=performance.now(); await rpcDirect('eth_blockNumber',[]); best=Math.min(best,performance.now()-t) } netv=Math.round(best) }
+  catch(e){ netv=null }
+  showNet();
+}
+
+// ===== Saved recipients =====
+function getRcpts(){try{return JSON.parse(localStorage.getItem('lr_rcpt')||'[]')}catch(e){return[]}}
+function saveRcpts(a){try{localStorage.setItem('lr_rcpt',JSON.stringify(a.slice(0,20)))}catch(e){}}
+function nameOf(addr){
+  const r = getRcpts().find(x=>x.addr.toLowerCase()===String(addr).toLowerCase());
+  if(r) return esc(r.name);
+  if(account && String(addr).toLowerCase()===account.toLowerCase()) return esc(T.me);
+  return short(String(addr));
+}
+function showRcpts(){
+  const r=getRcpts();
+  $('rchips').innerHTML = r.map((x,i)=>`<span class="chip"><button type="button" class="pick" data-i="${i}">${esc(x.name)}</button><button type="button" class="del" data-i="${i}" aria-label="${esc(T.rdel)}">×</button></span>`).join('');
+}
+$('rchips').onclick = e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  const r=getRcpts(), i=+b.dataset.i; if(!r[i]) return;
+  if(b.classList.contains('del')){ r.splice(i,1); saveRcpts(r); showRcpts(); showHist() }
+  else { $('to').value=r[i].addr; $('self').checked=false }
+};
+$('rsave').onclick = ()=>{
+  setPill('');
+  const name=$('rname').value.trim().slice(0,30);
+  let addr=$('to').value.trim();
+  if(!addr && $('self').checked && account) addr=account;      // saving your own wallet
+  if(!name || !/^0x[a-fA-F0-9]{40}$/.test(addr)) return setStatus(T.rbad,true);
+  saveRcpts([{name,addr},...getRcpts().filter(x=>x.addr.toLowerCase()!==addr.toLowerCase())]);
+  $('rname').value=''; showRcpts(); showHist(); setStatus(T.rsaved);
+};
+$('to').addEventListener('input',()=>{ if($('to').value.trim()) $('self').checked=false });
+
+// ===== History =====
+let last = null;
+function getHist(){try{return JSON.parse(localStorage.getItem('lr_hist')||'[]')}catch(e){return[]}}
+function saveHist(a){try{localStorage.setItem('lr_hist',JSON.stringify(a.slice(0,10)))}catch(e){}}
+function addHist(x){ saveHist([x,...getHist().filter(y=>y.hash!==x.hash)]) }
+function updHist(hash,p){ saveHist(getHist().map(y=>y.hash===hash?{...y,...p}:y)) }
+const stOf = x => x.st || (x.ms!=null ? 'ok' : 'pend');
+function storageOK(){try{localStorage.setItem('lr_t','1');localStorage.removeItem('lr_t');return true}catch(e){return false}}
+function showHist(){
+  const h=getHist(), el=$('hist');
+  if((last||h.length) && !storageOK()){ el.innerHTML='<p style="font-size:14px;color:#ffa3bd">'+T.histOff+'</p>'; return }
+  el.innerHTML = h.length ? '<h3>'+T.hist+'</h3>'+h.map(x=>{
+    const k=stOf(x), lab = k==='ok'?T.vOk : k==='bad'?T.vBad : T.pillPend;
+    const who = x.to ? ' → '+nameOf(x.to) : '';
+    return `<div><span class="pill ${k}">${esc(lab)}</span><span>${new Date(x.ts).toLocaleString()}</span><span>${x.amt!=null?x.amt+' USDC':'–'}${who}</span><span>${x.ms!=null?tm(x.ms):'–'}</span><span>${x.fee>0?fmtFee(x.fee):'–'}</span><a href="${CHAIN.explorer}/tx/${esc(x.hash)}" target="_blank" rel="noopener">${esc(x.hash.slice(0,10))}…</a></div>`;
+  }).join('') : '';
+}
+async function refreshPending(){
+  const h=getHist().filter(x=>stOf(x)==='pend'); if(!h.length) return;
+  for(const x of h){
+    try{ const rc=await rpcDirect('eth_getTransactionReceipt',[x.hash]);
+      if(rc) updHist(x.hash,{st:rc.status==='0x1'?'ok':'bad',fee:feeOf(rc),block:parseInt(rc.blockNumber,16)}) }catch(e){}
+  }
+  showHist();
+}
+
+// ===== Share =====
+$('copy').onclick = async()=>{
+  if(!last) return;
+  try{ await navigator.clipboard.writeText(T.share(tm(last.ms), fmtFee(last.fee), CHAIN.explorer+'/tx/'+last.hash)); }catch(e){}
+  $('copy').textContent=T.copied; setTimeout(()=>$('copy').textContent=T.copy,1500);
+};
+$('dl').onclick = async()=>{
+  if(!last) return;
+  const c=document.createElement('canvas'); c.width=1200; c.height=630; const x=c.getContext('2d');
+  x.fillStyle='#12302B'; x.fillRect(0,0,1200,630);
+  x.fillStyle='#0F6B4F'; x.fillRect(0,0,264,10); x.fillStyle='#EB7A1E'; x.fillRect(264,0,264,10); x.fillStyle='#8D2048'; x.fillRect(528,0,672,10);
+  try{ await document.fonts.load('800 80px "Abhaya Libre"'); }catch(e){}
+  try{
+    const svg = moon(false).replace('<svg ','<svg xmlns="http://www.w3.org/2000/svg" width="520" height="270" ');
+    const im = new Image(); await new Promise((ok,no)=>{im.onload=ok; im.onerror=no; im.src=URL.createObjectURL(new Blob([svg],{type:'image/svg+xml'}))});
+    x.drawImage(im,640,70,520,270);
+  }catch(e){}
+  x.fillStyle='#E3A21A'; x.font='800 150px "Abhaya Libre",Georgia,serif'; x.fillText(tm(last.ms),70,250);
+  x.fillStyle='#FFFFFF'; x.font='600 40px Figtree,Arial,sans-serif'; x.fillText('to confirm on Arc Testnet',70,320);
+  x.fillText('Network fee: '+fmtFee(last.fee),70,380);
+  x.fillStyle='#BFD2CC'; x.font='400 32px Figtree,Arial,sans-serif'; x.fillText('A bank wire to Sri Lanka can take 2 to 4 days (estimate).',70,440);
+  x.font='400 22px Figtree,Arial,sans-serif'; x.fillText('Time as measured in my browser.',70,478);
+  x.font='400 24px ui-monospace,Consolas,monospace'; x.fillText('tx '+last.hash.slice(0,20)+'…',70,525);
+  x.fillStyle='#E3A21A'; x.font='800 34px "Abhaya Libre",Georgia,serif'; x.fillText('LankaRemit · built for the Arc community in Colombo',70,575);
+  c.toBlob(b=>{const a=document.createElement('a'); a.href=URL.createObjectURL(b); a.download='lankaremit-result.png'; a.click()});
+};
+
+// ===== Balance =====
+let balv = null;
+function showBal(){ $('bal').textContent = balv===null ? '' : T.bal(balv) }
+async function loadBal(){
+  if(!account) return;
+  try{
+    const r = await rpc('eth_call',[{to:CHAIN.usdc,data:'0x70a08231'+pad(account)},'latest']);   // public RPC first, so it is never behind
+    balv = (Number(BigInt(r))/1e6).toFixed(2); showBal();
+  }catch(e){}
+}
+
+// ===== Verify a payment =====
+$('vgo').onclick = async()=>{
+  const h = $('vhash').value.trim(), out = $('vres');
+  if(!/^0x[a-fA-F0-9]{64}$/.test(h)){ out.textContent = T.vBadHash; return }
+  $('vgo').disabled = true; out.textContent = '…';
+  try{
+    const tx = await rpc('eth_getTransactionByHash',[h]);
+    if(!tx){ out.textContent = T.vNone; return }
+    const rc = await rpc('eth_getTransactionReceipt',[h]);
+    let to = tx.to, amount = '–';
+    if(tx.input && tx.input.startsWith('0xa9059cbb') && tx.input.length>=138){
+      to = '0x'+tx.input.slice(34,74);
+      amount = (Number(BigInt('0x'+tx.input.slice(74,138)))/1e6).toFixed(2)+' USDC';
+    }
+    const st = !rc ? ['',T.vPend] : rc.status==='0x1' ? ['ok',T.vOk] : ['bad',T.vBad];
+    const row = (k,v,c)=>`<dt>${T[k]}</dt><dd class="${c||''}">${esc(v)}</dd>`;
+    out.innerHTML = '<dl>'+row('vSt',st[1],st[0])+row('vFr',tx.from)+row('vTo',to)+row('vAm',amount)+
+      (rc ? row('vFe', fmtFee(feeOf(rc)))+row('vBk',parseInt(rc.blockNumber,16).toLocaleString('en-US')) : '')+'</dl>'+
+      `<p style="margin-top:12px"><a href="${CHAIN.explorer}/tx/${h}" target="_blank" rel="noopener">Arcscan ↗</a></p>`;
+  }catch(e){ out.textContent = T.vFail }
+  finally{ $('vgo').disabled = false }
+};
+
+// ===== Wait for a receipt (public RPC and wallet RPC in parallel) =====
+function waitReceipt(hash){
+  return new Promise((resolve,reject)=>{
+    let done=false; const start=performance.now();
+    const fin=(f,v)=>{ if(!done){done=true; f(v)} };
+    const loop = async (fn, maxFails)=>{
+      let fails=0;
+      while(!done){
+        try{ const r=await fn(); if(r){ fin(resolve,r); return } }
+        catch(e){ if(++fails>=maxFails) return }
+        if(performance.now()-start>90000){ fin(reject,new Error('timeout')); return }
+        await sleep(100);
+      }
+    };
+    loop(()=>rpcDirect('eth_getTransactionReceipt',[hash]), 4);
+    loop(()=>eth.request({method:'eth_getTransactionReceipt',params:[hash]}), 50);
+  });
+}
+
+// ===== Send =====
+async function send(){
+  if(!account && !(await connect())) return;
+  const to = $('self').checked ? account : $('to').value.trim();
+  const raw = $('tamt').value.trim().replace(',','.'), v = parseFloat(raw);
+  if(!/^0x[a-fA-F0-9]{40}$/.test(to)) return setStatus(T.badAddr,true);
+  if(!(v>0)) return setStatus(T.badAmt,true);
+  if(/\.\d{7,}/.test(raw)) return setStatus(T.badDec,true);
+  if(balv!==null && v>parseFloat(balv)) return setStatus(T.balLow,true);
+  $('send').disabled = true; $('res').classList.remove('on'); setPill('wait'); $('mtime').textContent='…';
+  let hash = null;
+  try{
+    let cid = await eth.request({method:'eth_chainId'});          // never send while the wallet is on another network
+    if(String(cid).toLowerCase()!==HEX.toLowerCase()){
+      await switchChain(); cid = await eth.request({method:'eth_chainId'});
+      if(String(cid).toLowerCase()!==HEX.toLowerCase()) throw new Error(T.wrongChain);
+    }
+    setStatus(T.confirmW);
+    const data = '0xa9059cbb' + pad(to) + pad(BigInt(Math.round(v*1e6)).toString(16));
+    hash = await eth.request({method:'eth_sendTransaction',params:[{from:account,to:CHAIN.usdc,data}]});
+    const t0 = performance.now();
+    addHist({ts:Date.now(),hash,to,amt:+v.toFixed(6),st:'pend'}); showHist();
+    setPill('pend'); setStatus(T.waiting); $('moonClock').classList.add('run','show');
+    const rc = await waitReceipt(hash);
+    const ms = performance.now()-t0, fee = feeOf(rc), blk = parseInt(rc.blockNumber,16), ok = rc.status==='0x1';
+    updHist(hash,{st:ok?'ok':'bad',ms,fee,block:blk});
+    $('rt').textContent = tm(ms); $('mtime').textContent = tm(ms);
+    $('rf').textContent = fmtFee(fee); $('rb').textContent = blk.toLocaleString('en-US');
+    $('rh').textContent = hash; $('rh').href = CHAIN.explorer+'/tx/'+hash;
+    $('copy').style.display = $('dl').style.display = ok ? '' : 'none';
+    $('res').classList.add('on');
+    setPill(ok?'ok':'bad'); showHist(); ping(); loadBal(); setTimeout(loadBal,1500); setTimeout(loadBal,4000);
+    if(ok){ last={ms,fee,hash}; if(fee>0){CFG.arcFeeUsd=fee; render()} setStatus(T.done) }
+    else setStatus(T.failed,true);
+  }catch(e){
+    if(hash){ setPill('pend'); setStatus(T.timeout,true) }
+    else { setPill(''); setStatus(e.code===4001?T.rejected:(e.message||'Error'),true) }
+  }finally{ $('send').disabled=false; $('moonClock').classList.remove('run') }
+}
+$('send').onclick = send;
+applyLang(); sizeAmt(); refreshPending(); ping();
+
+// ===== Silent reconnect (no popup) if this site is already approved in the wallet =====
+setTimeout(async()=>{
+  eth = pickProvider(); if(!eth) return;
+  try{
+    const a = await eth.request({method:'eth_accounts'});
+    if(a && a[0]){
+      account = a[0]; $('connect').textContent = short(account);
+      if(!bound && eth.on){ bound=true; eth.on('accountsChanged',x=>{account=x[0]||null;$('connect').textContent=account?short(account):T.connect;balv=null;showBal();loadBal()}) }
+      loadBal();
+    }
+  }catch(e){}
+}, 400);
+</script>
+</body>
+</html>
