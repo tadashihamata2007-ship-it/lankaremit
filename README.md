@@ -6,7 +6,7 @@ LankaRemit compares what a bank wire, a money transfer app and USDC on Arc leave
 
 Live demo: **https://lankaremit-arc-lk.netlify.app**
 
-Built by [add your name], a student in Colombo, for the Arc community.
+Built by Tadashi, a student in Colombo, for the Arc community.
 
 ## Why
 
@@ -71,4 +71,4 @@ _Add screenshots of the comparison, a completed test send, the share card and th
 
 ## License
 
-[add a license, for example MIT]
+MIT
